@@ -12,8 +12,7 @@ This README provides a step-by-step guide on how to set up Kong API Gateway and 
 5.Step 4: Start Kong \
 6.Step 5: Install Konga (Kong Admin GUI) \
 7.Step 6: Configure Konga \
-8.Step 7: Accessing Konga GUI \
-9.Step 8: Setting SSL Certificate on Kong API Gateway
+8.Step 7: Setting SSL Certificate on Kong API Gateway
 
 ## System Requirements
 
@@ -228,7 +227,7 @@ npm i node-sass sass sass-embedded
 npm start
 ```
 
-## Step 7: Accessing Konga GUI
+## Step 6: Accessing Konga GUI
 
 To access  Konga:
 1. Visit the server's public IP on port `1337`
@@ -241,7 +240,9 @@ http://<server-public-ip>:1337
 Kong Admin URL: http://<kong-public-ip>:8001
 ```
 The kong public IP is http://localhost:8001
-## Step 8: Setting  SSL certificate on the Gateway
+
+
+## Step 7: Setting  SSL certificate on the Gateway
 The setup ensures that all API requests are secured over HTTPS.
 1. Create OpenSSL Configuration File
    ```bash
