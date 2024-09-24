@@ -13,7 +13,7 @@ This README provides a step-by-step guide on how to set up Kong API Gateway and 
 6.Step 5: Install Konga (Kong Admin GUI) \
 7.Step 6: Configure Konga \
 8.Step 7: Accessing Konga GUI \
-9.Step 8: Testing Konga API Gateway
+9.Step 8: Setting SSL Certificate on Kong API Gateway
 
 ## System Requirements
 
@@ -241,7 +241,77 @@ http://<server-public-ip>:1337
 Kong Admin URL: http://<kong-public-ip>:8001
 ```
 The kong public IP is http://localhost:8001
-## step 8: Setting up SSL certificate
+## Step 8: Setting  SSL certificate on the Gateway
+The setup ensures that all API requests are secured over HTTPS.
+1. Create OpenSSL Configuration File
+   ```bash
+   sudo nano /etc/ssl/openssl.cnf
+   ```
+2. Add the following content, replacing `<public-gateway-ip-address>` with actual IP address.
+   ```bash
+   [ req ]
+   default_bits       = 2048
+   distinguished_name = req_distinguished_name
+   req_extensions     = req_ext
+   
+   [ req_distinguished_name ]
+   countryName         = Country Name (2 letter code) e.g TZ
+   stateOrProvinceName = State or Province Name e.g Dar es Salaam
+   localityName        = Locality Name e.g Dar es Salaam
+   organizationName    = Organization Name e.g Settlodev
+   commonName          = `public-gateway-ip-address`
+   
+   [ req_ext ]
+   subjectAltName = @alt_names
+   
+   [ alt_names ]
+   IP.1 = `public-gateway-ip-address`
+   ```
+   3. Generate the Certificate and Key
+      Run the the following command to generate a private key and self-signed certification:
+      ```bash
+      sudo openssl req -new -x509 -nodes -days 365 -keyout /etc/ssl/private/ip.key -out /etc/ssl/certs/ip.crt -config /etc/ssl/openssl.cnf
+      ```
+      This command creates two files
+      ```bash
+      - `/etc/ssl/private/ip.key`
+      - `/etc/ssl/certs/ip.crt`
+      ```
+    4. Move SSL Certicate and key to the correct directory
+       Create a directory for SSL certificate, key and move there:
+       ```bash
+       mkdir -p /etc/kong/ssl
+       mv /etc/ssl/certs/ip.crt /etc/kong/ssl/certs
+       mv /etc/ssl/private/ip.key /etc/kong/ssl/private
+       ```
+     5. Configure Kong for SSL
+        Locate and edit the `kong.conf` file
+        ```bash
+        sudo nano /etc/kong/kong.conf
+        ```
+        Upadate the following lines to specify the path to SSL certificate and key:
+        ```bash
+        ssl_cert = /etc/kong/ssl/certs/ip.crt
+        ssl_cert_key = /etc/kong/ssl/private/ip.key
+        ```
+      6. Restart Kong API Gateway:
+         ```bash
+         kong restart
+         ```
+      7. Verify the Configuration
+         To ensure that Kong is serving your API over HTTPS using the IP address, test it with curl. Replace `public-gateway-ip-address`
+         ```bash
+         curl -k https://192.168.1.1:8443/your-api-endpoint
+         ```
+         The -k option allows curl to connect without verifying the certificate (useful for self-signed certificates).
+
+      8. Troubleshooting Common Issues
+         If you encounter issues such as `ETIMEDOUT` or `WRONG_VERSION_NUMBER`, consider the following troubleshooting steps:
+          - Ensure that your server is running and accessible.
+          - Check firewall settings to allow traffic on port specified. eg 8443 (CASE AWS CLOUD SERVICE)
+          - Verify that Kong is correctly configured and listening on port 8443.
+          - Test connectivity using tools like telnet or curl.
+          - Review Kong's logs for any errors related to SSL/TLS connections.
 
 ## Documentation
 
