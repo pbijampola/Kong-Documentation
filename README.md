@@ -241,10 +241,12 @@ http://<server-public-ip>:1337
 Kong Admin URL: http://<kong-public-ip>:8001
 ```
 The kong public IP is http://localhost:8001
+## step 8: Setting up SSL certificate
+
 ## Documentation
 
 1. [Kong Installation Documentation](https://docs.konghq.com/gateway/3.8.x/install/linux/ubuntu/?install=oss#package-install) 
-2. 2. [Kong Data Store Documentation](https://docs.konghq.com/gateway/3.8.x/install/post-install/set-up-data-store/)
+2. [Kong Data Store Documentation](https://docs.konghq.com/gateway/3.8.x/install/post-install/set-up-data-store/)
 2. [Kong Services and Routes Documentation](https://docs.konghq.com/gateway/3.8.x/get-started/services-and-routes/)
 3. [Kong Gateway Tutorial: Running With a GUI](https://konghq.com/blog/engineering/kong-gateway-tutorial)
 
