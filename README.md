@@ -267,7 +267,7 @@ The setup ensures that all API requests are secured over HTTPS.
    [ alt_names ]
    IP.1 = `public-gateway-ip-address`
    ```
-   3. Generate the Certificate and Key
+3. Generate the Certificate and Key
       Run the the following command to generate a private key and self-signed certification:
       ```bash
       sudo openssl req -new -x509 -nodes -days 365 -keyout /etc/ssl/private/ip.key -out /etc/ssl/certs/ip.crt -config /etc/ssl/openssl.cnf
@@ -277,14 +277,14 @@ The setup ensures that all API requests are secured over HTTPS.
       - `/etc/ssl/private/ip.key`
       - `/etc/ssl/certs/ip.crt`
       ```
-    4. Move SSL Certicate and key to the correct directory
+4. Move SSL Certicate and key to the correct directory
        Create a directory for SSL certificate, key and move there:
        ```bash
        mkdir -p /etc/kong/ssl
        mv /etc/ssl/certs/ip.crt /etc/kong/ssl/certs
        mv /etc/ssl/private/ip.key /etc/kong/ssl/private
        ```
-     5. Configure Kong for SSL
+5. Configure Kong for SSL
         Locate and edit the `kong.conf` file
         ```bash
         sudo nano /etc/kong/kong.conf
@@ -294,18 +294,18 @@ The setup ensures that all API requests are secured over HTTPS.
         ssl_cert = /etc/kong/ssl/certs/ip.crt
         ssl_cert_key = /etc/kong/ssl/private/ip.key
         ```
-      6. Restart Kong API Gateway:
+6. Restart Kong API Gateway:
          ```bash
          kong restart
          ```
-      7. Verify the Configuration
+7. Verify the Configuration
          To ensure that Kong is serving your API over HTTPS using the IP address, test it with curl. Replace `public-gateway-ip-address`
          ```bash
          curl -k https://192.168.1.1:8443/your-api-endpoint
          ```
          The -k option allows curl to connect without verifying the certificate (useful for self-signed certificates).
 
-      8. Troubleshooting Common Issues
+8. Troubleshooting Common Issues
          If you encounter issues such as `ETIMEDOUT` or `WRONG_VERSION_NUMBER`, consider the following troubleshooting steps:
           - Ensure that your server is running and accessible.
           - Check firewall settings to allow traffic on port specified. eg 8443 (CASE AWS CLOUD SERVICE)
