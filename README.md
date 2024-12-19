@@ -12,7 +12,8 @@ This README provides a step-by-step guide on how to set up Kong API Gateway and 
 5.Step 4: Start Kong \
 6.Step 5: Install Konga (Kong Admin GUI) \
 7.Step 6: Configure Konga \
-8.Step 7: Setting SSL Certificate on Kong API Gateway
+8.Step 7: Setting SSL Certificate on Kong API Gateway (OPENSSL)
+9.Steo 8: Setting Free SSL certificate from Let's Encrypt on Kong API Gateway
 
 ## System Requirements
 
@@ -314,6 +315,47 @@ The setup ensures that all API requests are secured over HTTPS.
    - Verify that Kong is correctly configured and listening on port 8443.
    - Test connectivity using tools like telnet or curl.
    - Review Kong's logs for any errors related to SSL/TLS connections.
+
+
+## Step 8: Setting  SSL certificate on the Gateway (NOT INTERESTED ON USING OPENSSL)
+The setup ensures that all API requests are secured over HTTPS using free ssl certificate from Lets Encrypt.
+
+1. Stop services using port 80 if allowed and kong. For aws all the outbound for the instance on this port 80 to avoid the following issue
+  Certbot failed to authenticate some domains (authenticator: standalone). The Certificate Authority reported these problems:
+  Domain: gateway.settlo.co.tz
+  Type:   connection
+  Detail: <ip-address>: Fetching http://<domain>/.well-known/acme-challenge/2otjKPxPS3zMGy8qKY1-InLvrxPLq4dDEyzjXmglEUo: Timeout during connect (likely firewall problem)
+
+Hint: The Certificate Authority failed to download the challenge files from the temporary standalone webserver started by Certbot on port 80. Ensure that the listed domains point to this machine and that it can accept inbound connections from the internet
+
+```bash
+  sudo systemclt stop ngnix
+  sudo kong stop
+```
+ 
+2. install certbot
+   ```bash
+    sudo apt install python3-certbot-nginx 
+   ```
+3. Generate certbo. Do not put the port number at the end.
+   ```bash
+     sudo certbot certonly --standalone -d example.com 
+   ```
+4. Configure Kong for SSL
+   Locate and edit the `kong.conf` file
+    ```bash
+        sudo nano /etc/kong/kong.conf
+        ```
+        Upadate the following lines to specify the path to SSL certificate and key:
+        ```bash
+        ssl_cert = /etc/letsencrypt/live/<your-domain>/fullchain.pem
+        ssl_cert_key = /etc/letsencrypt/live/<your-domain>/privkey.pem
+    ```
+5. Set up automatic renewal. This will add a cron job to the default crontab.
+```bash
+  echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q" | sudo tee -a /etc/crontab > /dev/null
+```
+6. Restart the service and Good to Go 
 
 ## Documentation
 
